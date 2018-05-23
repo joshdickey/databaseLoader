@@ -79,6 +79,7 @@ cursor = conn.cursor()
 #lists of table names and forign keys as needed
 table_names = ['Person', 'PersonGroup', 'ServiceDefinition', 'Article', 'Change', 'Incident']
 person_foreign_keys = ['OwnedByPerson', 'AssignedPerson', 'RecordedByPerson', 'RequestedByPerson']
+service_foreign_keys = ['Service']
 
 #iterates the list of tablenames, creates and loads the tables with data
 for item in table_names:
@@ -91,9 +92,13 @@ for item in table_names:
     for key in person_foreign_keys:
         if key in header:
             header.append('FOREIGN KEY ('+key+') REFERENCES Person(Id)')
+    # adds the FOREIGN KEY constrainds for any columns in the related list
+    for key in service_foreign_keys:
+        if key in header:
+            header.append('FOREIGN KEY (' + key + ') REFERENCES Service(Id)')
 
     createTable(item, header)
-    readAllcsv(item)
+    readAllcsv(item, item)
     print('Table: '+item+' had bean created an loaded with data')
 
 conn.commit()
