@@ -77,8 +77,11 @@ conn = sqlite3.connect('SNImport.db')
 cursor = conn.cursor()
 
 #lists of table names and forign keys as needed
-table_names = ['Person', 'PersonGroup', 'ServiceDefinition', 'Article', 'Change', 'Incident']
-person_foreign_keys = ['OwnedByPerson', 'AssignedPerson', 'RecordedByPerson', 'RequestedByPerson']
+table_names = ['Person', 'PersonGroup', 'ServiceDefinition', 'Category', 'Article', 'Change', 'Incident']
+person_foreign_keys = ['OwnedByPerson', 'AssignedPerson', 'RecordedByPerson', 'RequestedByPerson', 'LastUpdateByPerson',
+                       'CreatedByPerson', 'ClosedByPerson', 'ContactPerson', 'SolvedByPerson', 'CompOpsExpertOnCall_c',
+                       'CompOpsOnCall_c']
+person_group_foreign_keys = ['KMAssignedGroup_c', 'OwnedByGroup' 'CompOpsGroup_c', 'AssignedGroup']
 service_foreign_keys = ['Service']
 
 #iterates the list of tablenames, creates and loads the tables with data
@@ -96,6 +99,11 @@ for item in table_names:
     for key in service_foreign_keys:
         if key in header:
             header.append('FOREIGN KEY (' + key + ') REFERENCES Service(Id)')
+
+    # adds the FOREIGN KEY constraints for any columns in the related list
+    for key in person_group_foreign_keys:
+        if key in header:
+            header.append('FOREIGN KEY (' + key + ') REFERENCES PersonGroup(Id)')
 
     createTable(item, header)
     readAllcsv(item, item)
